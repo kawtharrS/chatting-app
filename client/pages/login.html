@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="../styles/login.css">
+</head>
+<body>
+    <button id="backBtn" class="back-btn"><a href="../index.html">Back</a></button>
+
+    <div class="login-container">
+        <div class="imgcontainer">
+            <img src="../images/green.png" alt="Avatar" class="avatar">
+        </div>
+            
+        <div class="login-group">
+            <label for="uname">Email</label>
+            <input type="text" id="uname" name="uname" placeholder="Enter Username" required>
+        </div>
+            
+        <div class="login-group">
+            <label for="psw">Password</label>
+            <div class="password-container">
+                <input type="password" id="psw" name="psw" placeholder="Enter Password" required>
+             </div>
+        </div>    
+
+        <div class="button-group">
+            <Login type="submit" class="login-btn" id="loginBtn">Login</button>
+        </div>
+
+        <div class="register-link">
+            <p>Don't have an account? <a href="../pages/register.html">Register here</a></p>
+        </div>
+    </div>
+
+    <script src="../scripts/axios.min.js"></script>
+    <script src="../scripts/login/login_vars.js"></script>
+    <script src="../scripts/login/login.js"></script>
+</body>
+</html>
