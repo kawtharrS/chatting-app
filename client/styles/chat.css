@@ -1,0 +1,339 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+body {
+    height: 100vh;
+    background-image:url('../images/social-media-seamless-pattern-doodle-600nw-1992018458.webp');
+}
+
+.layout {
+    display: flex;
+    height: 100vh;
+    gap: 20px;
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.habits-panel {
+    width: 320px; 
+    background: #85b987;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+}
+
+.habits-panel h3 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-size: 1.5rem;
+    color: rgb(71, 71, 71);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.habit-grid {
+    display: flex;
+    flex-direction:column;
+    height:20%;
+    flex-wrap: wrap;
+    gap: 12px;
+    max-height: 20%; 
+    overflow-y: auto;   
+}
+
+
+.chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(50px);
+    border: 3px solid #85b987;
+    overflow: hidden;
+}
+
+.chat-box {
+    flex: 1;
+    padding: 25px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: #b2d8b4;
+    box-shadow: 0 4px 15px rgba(97, 144, 214, 0.4);
+
+}
+
+.message {
+    padding: 15px 20px;
+    border-radius: 18px;
+    max-width: 75%;
+    word-wrap: break-word;
+    font-size: 15px;
+    line-height: 1.4;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    animation: messageAppear 0.3s ease-out;
+}
+
+@keyframes messageAppear {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.user {
+    background: #ffffff;
+    align-self: flex-end;
+    border-bottom-right-radius: 5px;
+    color:white;
+}
+
+.bot {
+    background: #c5c5c5;
+    align-self: flex-start;
+    border-bottom-left-radius: 5px;
+    border: 1px solid rgba(248, 215, 218, 0.1);
+}
+
+.input-area {
+    display: flex;
+    padding: 20px;
+    border-top: 3px solid #85b987;
+    gap: 12px;
+    background: #ffffff;
+    backdrop-filter: blur(10px);
+}
+
+.input-area input {
+    flex: 1;
+    padding: 16px 20px;
+    border: 2px solid #cccccc;
+    border-radius: 15px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+}
+
+.input-area input:focus {
+    outline: none;
+    border-color: #85b987;
+    box-shadow: 0 0 0 3px rgba(56, 2, 184, 0.1);
+    background: white;
+}
+
+.input-area button {
+    background: #85b987;
+    color: white;
+    padding: 16px 24px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 16px;
+    border: none;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(56, 2, 184, 0.3);
+}
+
+.input-area button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(56, 2, 184, 0.4);
+}
+
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+    z-index: 1000;
+    animation: popupAppear 0.3s ease-out;
+}
+
+@keyframes popupAppear {
+    from {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+    }
+    to {
+        opacity: 1;
+        backdrop-filter: blur(5px);
+    }
+}
+
+.hidden {
+    display: none;
+}
+
+.popup-content {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    width: 380px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+    animation: popupContentAppear 0.3s ease-out;
+}
+
+@keyframes popupContentAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.popup-content input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 5px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+.popup-content input:focus {
+    outline: none;
+    border-color: #3802b8;
+    box-shadow: 0 0 0 3px rgba(56, 2, 184, 0.1);
+}
+
+.popup-buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 15px;
+    gap: 12px;
+}
+
+
+#closePopup {
+    background: #dc3545;
+    color: white;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+#closePopup:hover {
+    background: #b63232;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+#deletePopup {
+    background: #787878;
+    color: white;
+    box-shadow: 0 4px 15px rgba(120, 120, 120, 0.3);
+}
+
+#deletePopup:hover {
+    background: #5f5f5f;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(120, 120, 120, 0.4);
+}
+
+#saveNewHabit {
+    flex: 1;
+    background: #041170;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(4, 17, 112, 0.3);
+    transition: all 0.3s ease;
+}
+
+#saveNewHabit:hover {
+    background: #030a66;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(4, 17, 112, 0.4);
+}
+
+#closeNewPopup {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    transition: all 0.3s ease;
+}
+
+#closeNewPopup:hover {
+    background: #b63232;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+
+@media (max-width: 768px) {
+    .layout {
+        flex-direction: column;
+        padding: 15px;
+        gap: 15px;
+    }
+    
+    .habits-panel {
+        width: 100%;
+        padding: 20px;
+    }
+    
+    .habit-btn {
+        flex: 1 1 calc(50% - 8px);
+        min-width: auto;
+    }
+}
+
+.back-btn {
+    position: fixed; 
+    top: 45px;
+    left: 35px;
+    padding: 8px 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    background-color: #ffffff;
+    cursor: pointer;
+    z-index: 1000; 
+    transition: background-color 0.3s;
+}
+
+.back-btn:hover {
+    background-color: #6f9471;
+    color:white;
+}
+
+.back-btn a{
+    text-decoration:none;
+    color:#85b987
+}
+
+.back-btn a:hover{
+    color:#ffffff
+}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat With Habits</title>
+    <link rel="stylesheet" href="../styles/chat.css">
+</head>
+<body>
+
+<button id="backBtn" class="back-btn"><a href="/client/index.html">Back</a></button>
+
+<div class="layout">
+
+    <div class="habits-panel">
+        <h3>Messages</h3>
+    </div>
+
+    <div class="chat-container">
+        <div class="chat-box" id="chatBox"></div>
+        <div class="input-area">
+            <input type="text" id="userInput" placeholder="Type a message...">
+            <button id="sendBtn">Send</button>
+        </div>
+    </div>
+</div>
+
+<div id="habitPopup" class="popup hidden">
+    <div class="popup-content">
+        <p id="popupLabel"></p>
+        <input type="number" id="habitValue" placeholder="Enter value" min="0">
+        <div class="popup-buttons">
+            <button id="deletePopup">DELETE</button>
+            <button id="saveHabit">Save</button>
+        </div>
+            <button id="closePopup">Cancel</button>
+    </div>
+</div>
+
+<div id="addHabitPopup" class="popup hidden">
+    <div class="popup-content">
+        <p>Add New Habit</p>
+        <input type="text" id="newHabitName" placeholder="Habit Name">
+        <input type="text" id="newHabitUnit" placeholder="Unit (e.g., hrs, steps)">
+        <label>
+            <input type="checkbox" id="newHabitActive" checked>
+            Active
+        </label>
+        <button id="saveNewHabit">Save</button>
+        <button id="closeNewPopup">Cancel</button>
+    </div>
+</div>
+
+<script src="../scripts/axios.min.js"></script>
+</body>
+</html>
