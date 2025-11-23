@@ -48,7 +48,12 @@ class MessageController
 
     public function getAllMessages()
     {
-        $messages = Message::findAll($this->connection);
+        $conversationID = $_GET['conversationID'] ?? null;
+        if (!$conversationID) {
+            echo ResponseService::response(400, "messageID is missing");
+            return;
+        }
+        $messages = Message::where($this->connection, ["conversationID"=>intval($conversationID)]);
         $messagesArray = array_map(fn($message) => $message->toArray(), $messages);
         echo ResponseService::response(200, $messagesArray);
     }

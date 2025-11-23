@@ -48,7 +48,12 @@ class ContactController
 
     public function getAllContacts()
     {
-        $contacts = Contact::findAll($this->connection);
+        $userID = $_GET['userID'] ?? null;
+        if (!$userID) {
+            echo ResponseService::response(400, "userID missing");
+            return;
+        }
+        $contacts = Contact::where($this->connection, ["userID"=>intval($userID)]);
         $contactsArray = array_map(fn($contact) => $contact->toArray(), $contacts);
         echo ResponseService::response(200, $contactsArray);
     }

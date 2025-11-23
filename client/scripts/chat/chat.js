@@ -43,7 +43,7 @@ async function addNewContact(){
         const contactResponse = await axios.get(`${url}?email=${email}`);
         console.log(contactResponse.data.payload[0].userID);
         const contactUserID = contactResponse.data.payload[0].userID;
-
+        console.log(contactUserID);
 
         const response = await axios.post(URLS.contacts+"/create", {
             userID: userId,
@@ -59,7 +59,7 @@ async function addNewContact(){
         console.log(error);
     }
 }
-function addContactToUI(name, email, contactUserID) {
+function addContactToUI(name,email, contactUserID) {
     const contactsList = document.getElementById("contactsList");
 
     const btn = document.createElement("button");
@@ -68,19 +68,20 @@ function addContactToUI(name, email, contactUserID) {
 
     btn.dataset.contactId = contactUserID;
 
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", async () => {
         console.log("Selected contact ID:", contactUserID);
+        localStorage.setItem('contactUserID',contactUserID); 
         popupLabel.textContent = name;
-
-        // Set the selected contact
+        const response = await axios.post(URLS.conversations +"/create", {user1ID: userId, user2ID: contactUserID, subject: ""});
+        console.log(response);
         selectedContactID = contactUserID;
-
-        // Optionally enable the send button if it was disabled
         document.getElementById("sendBtn").disabled = false;
 
-        // Clear or load previous messages if needed
         document.getElementById("chatBox").innerHTML = `<h2>Chat with ${name}</h2>`;
+
+        await getConversation(contactUserID);
     });
+
 
     contactsList.appendChild(btn);
 }
@@ -113,32 +114,79 @@ const sendBtn = document.getElementById("sendBtn");
 const userInput = document.getElementById("userInput");
 
 sendBtn.addEventListener("click", async () => {
-    if (!selectedContactID) {
-        alert("Please select a contact first!");
-        return;
-    }
+    if (!selectedContactID) { alert("Select a contact!"); return; }
 
     const message = userInput.value.trim();
     if (!message) return;
 
-    // Send the message to backend
     try {
-        await axios.post(URLS.chats + "/create", {
+        const response = await axios.post(URLS.messages + "/create", {
             senderID: userId,
-            receiverID: selectedContactID,
-            text: message
+            recipientID: selectedContactID,
+            conversationID: currentConversationID,
+            content: message
         });
+        console.log(response);
 
-        // Optionally display the message immediately in the chat UI
         const chatBox = document.getElementById("chatBox");
         const div = document.createElement("div");
         div.classList.add("my-message");
         div.textContent = message;
         chatBox.appendChild(div);
 
-        userInput.value = ""; // clear input
+        userInput.value = "";
         chatBox.scrollTop = chatBox.scrollHeight;
+
     } catch (err) {
-        console.error("Error sending message:", err);
+        console.error(err);
     }
 });
+
+let currentConversationID = null;
+
+async function getConversation(contactID) {
+    try {
+        const response = await axios.post(URLS.conversations + "/chat", {
+            user1ID: userId,
+            user2ID: contactID,
+        });
+
+        currentConversationID = response.data.payload.conversationID;
+        console.log("Current Conversation ID:", currentConversationID);
+
+        loadMessages(currentConversationID);
+
+    } catch (err) {
+        console.error("Error getting conversation:", err);
+    }
+}
+
+async function loadMessages(conversationID) {
+    if (!conversationID) return;
+
+    try {
+        const response = await axios.get(`${URLS.messages}?conversationID=${conversationID}`);
+        let messages = response.data.payload;
+
+        if (!Array.isArray(messages)) {
+            messages = messages ? [messages] : [];
+        }
+
+        const chatBox = document.getElementById("chatBox");
+        chatBox.innerHTML = `<h2>Chat with ${popupLabel.textContent}</h2>`;
+
+        messages.forEach(msg => {
+            const div = document.createElement("div");
+            div.textContent = msg.content;
+            div.classList.add(msg.senderID === userId ? "my-message" : "other-message");
+            chatBox.appendChild(div);
+        });
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+    } catch (err) {
+        console.error("Error loading messages:", err);
+    }
+}
+
+
