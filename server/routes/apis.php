@@ -22,19 +22,33 @@ $apis = [
     '/conversations/create'         => ['controller' => 'ConversationController', 'method' => 'insertConversation'],
     '/conversations/delete'         => ['controller' => 'ConversationController', 'method' => 'deleteConversations'],
     '/conversations/update'         => ['controller' => 'ConversationController', 'method' => 'updateConversations'],
+<<<<<<< HEAD
     
     '/messages/id'             => ['controller' => 'MessageController', 'method' => 'getMessagesById'],
     '/messages'                => ['controller' => 'MessageController', 'method' => 'getAllMessages'],
     '/messages/create'         => ['controller' => 'MessageController', 'method' => 'insertMessage'],
     '/messages/delete'         => ['controller' => 'MessageController', 'method' => 'deleteMessages'],
     '/messages/update'         => ['controller' => 'MessageController', 'method' => 'updateMessages'],
+=======
+    '/conversations/chat'           => ['controller' => 'ConversationController', 'method' => 'getConversationBetweenUsers'],
+>>>>>>> 9ada0b5
 
-    '/notifications/id'             => ['controller' => 'NotificationsController', 'method' => 'getNotificationsById'],
-    '/notifications'                => ['controller' => 'NotificationsController', 'method' => 'getAllNotifications'],
-    '/notifications/create'         => ['controller' => 'NotificationsController', 'method' => 'insertNotifications'],
-    '/notifications/delete'         => ['controller' => 'NotificationsController', 'method' => 'deleteCNotifications'],
-    '/notifications/update'         => ['controller' => 'NotificationsController', 'method' => 'updateNotifications'],
+    
+    '/messages/id'             => ['controller' => 'MessageController', 'method' => 'getMessagesById'],
+    '/messages'                => ['controller' => 'MessageController', 'method' => 'getAllMessages'],
+    '/messages/create'         => ['controller' => 'MessageController', 'method' => 'insertMessage'],
+    '/messages/delete'         => ['controller' => 'MessageController', 'method' => 'deleteMessages'],
+    '/messages/update'         => ['controller' => 'MessageController', 'method' => 'updateMessage'],
+    '/messages/markedD'        => ['controller' => 'MessageController', 'method' => 'markAllDelivered'],
+    '/messages/markedR'        => ['controller' => 'MessageController', 'method' => 'markAllRead'],
+
+    '/notifications/id'             => ['controller' => 'NotificationController', 'method' => 'getNotificationsById'],
+    '/notifications'                => ['controller' => 'NotificationController', 'method' => 'getAllNotifications'],
+    '/notifications/create'         => ['controller' => 'NotificationController', 'method' => 'insertNotifications'],
+    '/notifications/delete'         => ['controller' => 'NotificationController', 'method' => 'deleteCNotifications'],
+    '/notifications/update'         => ['controller' => 'NotificationController', 'method' => 'updateNotifications'],
 
 ];
 
 
+?>

@@ -53,7 +53,11 @@ class ContactController
             echo ResponseService::response(400, "userID missing");
             return;
         }
+<<<<<<< HEAD
         $contacts = Contact::where($this->connection, ["userID" => intval($userID)]);
+=======
+        $contacts = Contact::where($this->connection, ["userID"=>intval($userID)]);
+>>>>>>> 9ada0b5
         $contactsArray = array_map(fn($contact) => $contact->toArray(), $contacts);
         echo ResponseService::response(200, $contactsArray);
     }

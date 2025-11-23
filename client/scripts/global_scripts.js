@@ -3,11 +3,16 @@ URLS={
     login: cmn + "/services/loginService.php",
     users : cmn + "/users",
     contacts: cmn + "/contacts", 
+<<<<<<< HEAD
     messages: cmn + "/messages",
     conversations: cmn + "/conversations"
+=======
+    conversations:cmn + "/conversations",
+    messages : cmn +"/messages"
+>>>>>>> 9ada0b5
 }
 const userId = localStorage.getItem("user-id");
-
+const contactUserID= localStorage.getItem("contactUserID");
 function validateName (name)
 {
     const namePattern  = /^[a-zA-Z\s-]+$/; 

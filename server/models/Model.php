@@ -86,19 +86,27 @@ abstract class Model
         $stmt = self::bindAndExecute($connection, $sql, array_values($conditions));
         return $stmt ? self::fetchObjects($stmt) : [];
     }
+
     public static function whereOr(mysqli $connection, array $conditions): array
     {
-        $clauses = array_map(fn($group) => 
-            '(' . implode(' AND ', array_map(fn($col) => "$col = ?", array_keys($group))) . ')', 
-            $conditions
-        );
-
-        $sql = sprintf("SELECT * FROM %s WHERE %s", static::$table, implode(' OR ', $clauses));
-        $params = array_merge(...array_map('array_values', $conditions));
-        $stmt = self::bindAndExecute($connection, $sql, $params);
+        if (empty($conditions)) return [];
+        $clauses = implode(' OR ', array_map(fn($col) => "$col = ?", array_keys($conditions)));
+        $sql = sprintf("SELECT * FROM %s WHERE %s", static::$table, $clauses);
+        $stmt = self::bindAndExecute($connection, $sql, array_values($conditions));
         return $stmt ? self::fetchObjects($stmt) : [];
     }
 
-    
+    public static function updateWhere(mysqli $connection, array $conditions, array $data): int
+    {
+        if (empty($conditions) || empty($data)) return 0;
+        $set = implode(', ', array_map(fn($col) => "$col = ?", array_keys($data)));
+        $where = implode(' AND ', array_map(fn($col) => "$col = ?", array_keys($conditions)));
+        $sql = sprintf("UPDATE %s SET %s WHERE %s", static::$table, $set, $where);
+        $params = array_merge(array_values($data), array_values($conditions));
+        $stmt = self::bindAndExecute($connection, $sql, $params);
+        return $stmt ? $stmt->affected_rows : 0;
+    }
+
+
 }
 ?>

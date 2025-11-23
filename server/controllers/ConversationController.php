@@ -48,6 +48,7 @@ class ConversationController
 
     public function getAllConversations()
     {
+<<<<<<< HEAD
         $userID = $_GET['userID'] ?? null;
         if (!$userID) {
             echo ResponseService::response(400, "userID missing");
@@ -60,6 +61,10 @@ class ConversationController
         ]);
 
         $conversationsArray = array_map(fn($c) => $c->toArray(), $conversations);
+=======
+        $conversations = Conversation::findAll($this->connection);
+        $conversationsArray = array_map(fn($conv) => $conv->toArray(), $conversations);
+>>>>>>> 9ada0b5
         echo ResponseService::response(200, $conversationsArray);
     }
 
@@ -67,6 +72,7 @@ class ConversationController
     {
         $input = $this->getInput();
 
+<<<<<<< HEAD
         if (!isset($input["user1ID"], $input["user2ID"])) {
             echo ResponseService::response(400, "Missing required fields");
             return;
@@ -86,13 +92,23 @@ class ConversationController
 
         if (!empty($existing)) {
             echo ResponseService::response(200, $existing[0]->toArray());
+=======
+        if (!isset($input["user1ID"]) || !isset($input["user2ID"])) {
+            echo ResponseService::response(400, "Missing user1ID or user2ID");
+>>>>>>> 9ada0b5
             return;
         }
 
         $data = [
+<<<<<<< HEAD
             'user1ID' => $user1ID,
             'user2ID' => $user2ID,
             'subject' => $input['subject'] ?? null
+=======
+            'user1ID' => $input["user1ID"],
+            'user2ID' => $input["user2ID"],
+            'subject' => $input["subject"] ?? ""
+>>>>>>> 9ada0b5
         ];
 
         $conversation = Conversation::create($this->connection, $data);
@@ -129,6 +145,10 @@ class ConversationController
         $conversation = $this->fetchConversationById($conversationID);
         if (!$conversation) return;
 
+<<<<<<< HEAD
+=======
+        $fields = ['subject', 'user1ID', 'user2ID'];
+>>>>>>> 9ada0b5
         $data = [];
         if (isset($input['subject'])) {
             $data['subject'] = $input['subject'];
@@ -140,8 +160,52 @@ class ConversationController
         }
 
         $conversation->update($this->connection, $data);
+<<<<<<< HEAD
         $updated = Conversation::find($this->connection, $conversationID);
         echo ResponseService::response(200, $updated->toArray());
+=======
+        $updatedConversation = Conversation::find($this->connection, $conversationID);
+        echo ResponseService::response(200, $updatedConversation->toArray());
+>>>>>>> 9ada0b5
+    }
+
+    public function getConversationBetweenUsers()
+    {
+        $input = $this->getInput();
+        $user1 = $input['user1ID'] ?? null;
+        $user2 = $input['user2ID'] ?? null;
+
+        if (!$user1 || !$user2) {
+            echo ResponseService::response(400, "user1ID and user2ID are required");
+            return;
+        }
+
+        $conversations = Conversation::whereOr($this->connection, [
+            'user1ID' => $user1,
+            'user2ID' => $user1
+        ]);
+
+        $conversation = null;
+        foreach ($conversations as $conv) {
+            if (
+                ($conv->getUser1ID() == $user1 && $conv->getUser2ID() == $user2) ||
+                ($conv->getUser1ID() == $user2 && $conv->getUser2ID() == $user1)
+            ) {
+                $conversation = $conv;
+                break;
+            }
+        }
+
+        if (!$conversation) {
+            $data = [
+                'user1ID' => $user1,
+                'user2ID' => $user2,
+                'subject' => ''
+            ];
+            $conversation = Conversation::create($this->connection, $data);
+        }
+
+        echo ResponseService::response(200, $conversation->toArray());
     }
 }
 ?>
