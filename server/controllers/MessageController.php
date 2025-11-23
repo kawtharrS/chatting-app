@@ -48,21 +48,12 @@ class MessageController
 
     public function getAllMessages()
     {
-<<<<<<< HEAD
-        $recipientID = $_GET['recipientID'] ?? null;
-        if (!$recipientID) {
-            echo ResponseService::response(400, "recipientID missing");
-            return;
-        }
-        $messages = Message::where($this->connection, ["recipientID"=>intval($recipientID)]);
-=======
         $conversationID = $_GET['conversationID'] ?? null;
         if (!$conversationID) {
             echo ResponseService::response(400, "messageID is missing");
             return;
         }
         $messages = Message::where($this->connection, ["conversationID"=>intval($conversationID)]);
->>>>>>> 9ada0b5
         $messagesArray = array_map(fn($message) => $message->toArray(), $messages);
         echo ResponseService::response(200, $messagesArray);
     }
@@ -135,11 +126,7 @@ class MessageController
         $message = $this->fetchMessageById($messageID);
         if (!$message) return;
 
-<<<<<<< HEAD
-        $fields = ['senderID', 'recipientID', 'content'];
-=======
         $fields = ['senderID', 'recipientID', 'content', 'conversationID', 'status'];
->>>>>>> 9ada0b5
         $data = [];
 
         foreach ($fields as $field) {

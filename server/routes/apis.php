@@ -22,16 +22,7 @@ $apis = [
     '/conversations/create'         => ['controller' => 'ConversationController', 'method' => 'insertConversation'],
     '/conversations/delete'         => ['controller' => 'ConversationController', 'method' => 'deleteConversations'],
     '/conversations/update'         => ['controller' => 'ConversationController', 'method' => 'updateConversations'],
-<<<<<<< HEAD
-    
-    '/messages/id'             => ['controller' => 'MessageController', 'method' => 'getMessagesById'],
-    '/messages'                => ['controller' => 'MessageController', 'method' => 'getAllMessages'],
-    '/messages/create'         => ['controller' => 'MessageController', 'method' => 'insertMessage'],
-    '/messages/delete'         => ['controller' => 'MessageController', 'method' => 'deleteMessages'],
-    '/messages/update'         => ['controller' => 'MessageController', 'method' => 'updateMessages'],
-=======
     '/conversations/chat'           => ['controller' => 'ConversationController', 'method' => 'getConversationBetweenUsers'],
->>>>>>> 9ada0b5
 
     
     '/messages/id'             => ['controller' => 'MessageController', 'method' => 'getMessagesById'],
