@@ -46,6 +46,20 @@ class UserController
         }
     }
 
+    public function getUserByEmail()
+    {
+        $email = $_GET['email'] ?? null;
+        if (!$email) {
+            echo ResponseService::response(400, "email missing");
+            return;
+        }
+
+        $entries = User::where($this->connection, ["email" => $email]);
+        $entriesArr = array_map(fn($entry) => $entry->toArray(), $entries);
+
+        echo ResponseService::response(200, $entriesArr);
+    }
+
     public function getAllUsers()
     {
         $users = User::findAll($this->connection);

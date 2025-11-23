@@ -2,7 +2,12 @@
 require_once(__DIR__ . '/../connection/connection.php');
 require_once(__DIR__ . '/../models/User.php');
 require_once("ResponseService.php");
-require_once(__DIR__ . './../connection/config.php');
+require_once(__DIR__ . '/../connection/config.php');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
 $email = $input['email'] ?? '';
 $password= $input['password'] ?? '';
@@ -22,7 +27,7 @@ function login(){
     $data= $query->get_result()->fetch_assoc();
 
     if(!empty($data) && password_verify($password, $data["password"])){
-        ResponseService::result(200, "ypu are logged in", ["id"=>$data]);
+        ResponseService::result(200, "ypu are logged in", ["userID"=>$data]);
     }
     else{
         ResponseService::result(400, "Invalid email or password");

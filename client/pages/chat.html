@@ -14,43 +14,46 @@
 
     <div class="habits-panel">
         <h3>Messages</h3>
+        <button class="habit-btn-add" id="addContact">+</button>
+        <div id="contactsList"></div>
     </div>
 
     <div class="chat-container">
-        <div class="chat-box" id="chatBox"></div>
+        <div class="chat-box" id="chatBox">
+            <h2>Choose your contact to start...</h2>
+        </div>
         <div class="input-area">
             <input type="text" id="userInput" placeholder="Type a message...">
-            <button id="sendBtn">Send</button>
+            <button id="sendBtn" disabled>Send</button>
+
         </div>
     </div>
 </div>
 
-<div id="habitPopup" class="popup hidden">
+<div id="contactPopup" class="popup hidden">
     <div class="popup-content">
         <p id="popupLabel"></p>
         <input type="number" id="habitValue" placeholder="Enter value" min="0">
         <div class="popup-buttons">
             <button id="deletePopup">DELETE</button>
-            <button id="saveHabit">Save</button>
+            <button id="saveContact">Save</button>
         </div>
             <button id="closePopup">Cancel</button>
     </div>
 </div>
 
-<div id="addHabitPopup" class="popup hidden">
+<div id="addContactPopup" class="popup hidden">
     <div class="popup-content">
-        <p>Add New Habit</p>
-        <input type="text" id="newHabitName" placeholder="Habit Name">
-        <input type="text" id="newHabitUnit" placeholder="Unit (e.g., hrs, steps)">
-        <label>
-            <input type="checkbox" id="newHabitActive" checked>
-            Active
-        </label>
-        <button id="saveNewHabit">Save</button>
+        <p>Add New Contact</p>
+        <input type="text" id="contactName" placeholder="Name (e.g. John Doe)">
+        <input type="text" id="contactEmail" placeholder="Email (e.g. John@gmail.com)">
+        <button id="saveNewContact">Save</button>
         <button id="closeNewPopup">Cancel</button>
     </div>
 </div>
 
 <script src="../scripts/axios.min.js"></script>
+<script src="../scripts/global_scripts.js"></script>
+<script src="../scripts/chat/chat.js"></script>
 </body>
 </html>

@@ -52,12 +52,25 @@ class ContactController
         $contactsArray = array_map(fn($contact) => $contact->toArray(), $contacts);
         echo ResponseService::response(200, $contactsArray);
     }
+    public function getContactByEmail()
+    {
+        $email = $_GET['email'] ?? null;
+        if (!$email) {
+            echo ResponseService::response(400, "email missing");
+            return;
+        }
+
+        $entries = Contact::where($this->connection, ["user_id" => $email]);
+        $entriesArr = array_map(fn($entry) => $entry->toArray(), $entries);
+
+        echo ResponseService::response(200, $entriesArr);
+    }
 
     public function insertContact()
     {
         $input = $this->getInput();
 
-        if (!isset($input["userID"], $input["contactUserID"])) {
+        if (!isset($input["userID"], $input["contactUserID"],$input["contactName"], $input["contactEmail"],)) {
             echo ResponseService::response(400, "Missing required fields");
             return;
         }
@@ -65,6 +78,8 @@ class ContactController
         $data = [
             'userID' => $input["userID"],
             'contactUserID' => $input["contactUserID"],
+            'contactName' =>$input["contactName"],
+            'contactEmail' =>$input["contactEmail"]
         ];
 
         $contact = Contact::create($this->connection, $data);
@@ -101,7 +116,7 @@ class ContactController
         $contact = $this->fetchContactById($contactID);
         if (!$contact) return;
 
-        $fields = ['userID', 'contactUserID'];
+        $fields = ['userID', 'contactUserID', 'contactName', 'contactEmail'];
         $data = [];
 
         foreach ($fields as $field) {

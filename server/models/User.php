@@ -11,10 +11,10 @@ class User extends Model{
     protected static string $table = "users";
 
     public function __construct(array $data){
-        $this ->$data["userID"];
-        $this ->$data["userName"];
-        $this ->$data["email"];
-        $this ->$data["password"];
+        $this ->userID=$data["userID"];
+        $this ->userName=$data["userName"];
+        $this ->email=$data["email"];
+        $this ->password=$data["password"];
     }
 
     public function getUserID()

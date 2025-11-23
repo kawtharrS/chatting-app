@@ -16,29 +16,17 @@ loginBtn.addEventListener("click", async () => {
         console.log(response);
 
         //add user id to the local storage
-        const userId = response.data.data.id;
+        const userId = response.data.data.userID.userID;
         localStorage.setItem('user-id',userId); 
         console.log("User id saved:", userId);
-        console.log("check");
-        //add the user's role to the local storage 
-        console.log (response.data.data[0].role);
-        const userRole = response.data.data[0].role;
-        localStorage.setItem('userRole', userRole);
-        console.log("User's role :", userRole);
-        console.log("hi check");
+
 
         let isLogin = false;
         if (response.status === 200) 
             isLogin=true;
 
         localStorage.setItem('isLogin', isLogin); 
-        if (userRole === "admin")
-        {
-            window.location.href = "/client/pages/admin.html";
-        }
-        else{
-            window.location.href = "/client/index.html";
-        }
+
         alert("Welcome you are logged in");
     } catch (error) {
         console.log(error);
