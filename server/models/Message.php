@@ -9,6 +9,8 @@ class Message extends Model{
     private string $timestamp;
     private int $conversationID;
 
+    private string $status;
+
 
     protected static string $table = "messages";
 
@@ -19,6 +21,7 @@ class Message extends Model{
         $this ->content = $data["content"];
         $this ->timestamp = $data["timestamp"];
         $this->conversationID = $data['conversationID'];
+        $this->status = $data['status'];
 
     }
 
@@ -51,13 +54,22 @@ class Message extends Model{
         $this->timestamp = $timestamp;
     }
 
+    public function getStatus()
+    {
+        return $this ->status;
+    }
+    public function setStatus(string $status)
+    {
+        $this->status = $status;
+    }
+
 
     public function __toString(){
-        return $this->messageID . " | " . $this->senderID . " | " .$this->recipientID . " | " . $this->content . " | " . $this->timestamp . " | " . $this->conversationID ;
+        return $this->messageID . " | " . $this->senderID . " | " .$this->recipientID . " | " . $this->content . " | " . $this->timestamp . " | " . $this->conversationID. " | " . $this->status ;
     }
     
     public function toArray(){
-        return ["messageID" => $this->messageID, "senderID" => $this->senderID,"recipientID" => $this->recipientID ,"content" => $this->content,"timestamp" => $this->timestamp, "conversationID" => $this->conversationID];
+        return ["messageID" => $this->messageID, "senderID" => $this->senderID,"recipientID" => $this->recipientID ,"content" => $this->content,"timestamp" => $this->timestamp, "conversationID" => $this->conversationID, "status" => $this->status];
     }
 
 }

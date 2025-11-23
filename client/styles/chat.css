@@ -359,6 +359,10 @@ body {
     align-self: flex-end;               
     text-align: left;                 
     box-shadow: 0 2px 8px rgba(79, 140, 255, 0.3);
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+    display: flex;
 }
 
 
@@ -384,3 +388,7 @@ body {
     height: 100%;
 }
 
+.sent-icon {
+    width: 24px;
+    height: 24px;
+}

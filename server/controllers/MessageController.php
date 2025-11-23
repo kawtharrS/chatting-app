@@ -57,31 +57,12 @@ class MessageController
         $messagesArray = array_map(fn($message) => $message->toArray(), $messages);
         echo ResponseService::response(200, $messagesArray);
     }
-    public function getMessagesBetweenUsers()
-    {
-        $user1 = $_GET['user1'] ?? null;
-        $user2 = $_GET['user2'] ?? null;
-
-        if (!$user1 || !$user2) {
-            echo ResponseService::response(400, "Both user IDs are required");
-            return;
-        }
-
-        $messages = Message::whereOr($this->connection, [
-            ['senderID' => $user1, 'recipientID' => $user2],
-            ['senderID' => $user2, 'recipientID' => $user1]
-        ]);
-
-        $messagesArray = array_map(fn($m) => $m->toArray(), $messages);
-        echo ResponseService::response(200, $messagesArray);
-    }
-
 
     public function insertMessage()
     {
         $input = $this->getInput();
 
-        if (!isset($input["senderID"], $input["recipientID"], $input["content"])) {
+        if (!isset($input["senderID"], $input["recipientID"], $input["content"], $input["conversationID"])) {
             echo ResponseService::response(400, "Missing required fields");
             return;
         }
@@ -90,6 +71,7 @@ class MessageController
             'senderID' => $input["senderID"],
             'recipientID' => $input["recipientID"],
             'content' => $input["content"],
+            'conversationID' => $input["conversationID"],
         ];
 
         $message = Message::create($this->connection, $data);

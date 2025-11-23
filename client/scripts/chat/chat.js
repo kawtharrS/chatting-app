@@ -1,4 +1,3 @@
-// DOM elements
 const addContact = document.getElementById("addContact");
 const addContactPopup = document.getElementById("addContactPopup");
 const saveContact = document.getElementById("saveContact");
@@ -76,12 +75,10 @@ async function addNewContact() {
 function addContactToUI(name, email, contactUserID) {
     const contactsList = document.getElementById("contactsList");
 
-function addContactToUI(name, email, contactUserID) {
     const btn = document.createElement("button");
     btn.classList.add("contact-btn");
     btn.textContent = name;
     btn.dataset.contactId = contactUserID;
-    btn.dataset.contactName = name;
 
     btn.addEventListener("click", async () => {
         console.log("Selected contact ID:", contactUserID);
@@ -111,7 +108,6 @@ function addContactToUI(name, email, contactUserID) {
 
 async function loadContacts() {
     try {
-        console.log("Loading contacts for user:", userId);
         const response = await axios.get(`${URLS.contacts}?userID=${userId}`);
         let contacts = response.data.payload;
 
@@ -120,30 +116,8 @@ async function loadContacts() {
         const contactsList = document.getElementById("contactsList");
         contactsList.innerHTML = "";
 
-        if (!contacts) {
-            console.log("No contacts found");
-            const emptyMsg = document.createElement("p");
-            emptyMsg.textContent = "No contacts yet. Add one to start chatting!";
-            emptyMsg.style.padding = "1rem";
-            emptyMsg.style.textAlign = "center";
-            emptyMsg.style.color = "#666";
-            contactsList.appendChild(emptyMsg);
-            return;
-        }
-
-        // Ensure contacts is an array
         if (!Array.isArray(contacts)) {
             contacts = contacts ? [contacts] : [];
-        }
-
-        if (contacts.length === 0) {
-            const emptyMsg = document.createElement("p");
-            emptyMsg.textContent = "No contacts yet. Add one to start chatting!";
-            emptyMsg.style.padding = "1rem";
-            emptyMsg.style.textAlign = "center";
-            emptyMsg.style.color = "#666";
-            contactsList.appendChild(emptyMsg);
-            return;
         }
 
         contacts.forEach(contact => {
@@ -151,25 +125,9 @@ async function loadContacts() {
         });
 
     } catch (error) {
-        console.error("Error loading contacts:", error);
-        contactsList.innerHTML = "<p style='padding: 1rem; color: red;'>Error loading contacts</p>";
+        console.log("Error loading contacts:", error);
     }
 }
-async function markConversationDelivered(conversationID) {
-    if (!conversationID) return;
-
-    try {
-        const response = await axios.post(URLS.messages + "/markedD", {
-            conversationID: conversationID,
-            recipientID: userId 
-        });
-
-        console.log("Messages marked as delivered:", response.data);
-    } catch (error) {
-        console.error("Error marking messages as delivered:", error);
-    }
-}
-
 
 const sendBtn = document.getElementById("sendBtn");
 const userInput = document.getElementById("userInput");
@@ -194,9 +152,20 @@ sendBtn.addEventListener("click", async () => {
         console.log("Message sent:", response);
 
         const chatBox = document.getElementById("chatBox");
+
         const div = document.createElement("div");
         div.classList.add("my-message");
-        div.textContent = message;
+
+        const text = document.createElement("span");
+        text.textContent = message;
+
+        const img = document.createElement("img");
+        img.src = "/client/images/check.png";  
+        img.classList.add("sent-icon");
+
+        div.appendChild(text);
+        div.appendChild(img);
+
         chatBox.appendChild(div);
 
         userInput.value = "";
@@ -206,6 +175,7 @@ sendBtn.addEventListener("click", async () => {
         console.error("Error sending message:", err);
     }
 });
+
 
 userInput.addEventListener("keypress", (e) => {
     if (e.key === 'Enter') {
@@ -223,10 +193,9 @@ async function getConversation(contactID) {
         currentConversationID = response.data.payload.conversationID;
         console.log("Current Conversation ID:", currentConversationID);
 
-        await loadMessages(currentConversationID);
         await markAllDelivered();
         await markConversationRead(currentConversationID);
-
+        await loadMessages(currentConversationID); 
     } catch (err) {
         console.error("Error getting conversation:", err);
     }
@@ -263,26 +232,32 @@ async function loadMessages(conversationID) {
         console.log(`Loading ${messages.length} messages for user:`, userId);
 
         messages.sort((a, b) => new Date(a.timestamp || a.createdAt) - new Date(b.timestamp || b.createdAt));
-
+        console.log(messages);
         messages.forEach(msg => {
             const div = document.createElement("div");
-            div.textContent = msg.content;
-            
-            console.log("Message debug:", {
-                content: msg.content,
-                senderID: msg.senderID,
-                userId: userId,
-                isMyMessage: msg.senderID.toString() === userId.toString()
-            });
+            div.classList.add(msg.senderID == userId ? "my-message" : "other-message");
 
-            if (msg.senderID.toString() === userId.toString()) {
-                div.classList.add("my-message");
-            } else {
-                div.classList.add("other-message");
+            const text = document.createElement("span");
+            text.textContent = msg.content;
+            div.appendChild(text);
+            if (msg.senderID == userId) {
+                const img = document.createElement("img");
+                img.classList.add("sent-icon");
+
+                if (msg.status =="read") {
+                    img.src = "/client/images/read.png";  
+                } else if (msg.status =="delivered") {
+                    img.src = "/client/images/two-ticks.png";
+                } else {
+                    img.src = "/client/images/check.png";
+                }
+
+                div.appendChild(img);
             }
-            
+
             chatBox.appendChild(div);
         });
+
 
         chatBox.scrollTop = chatBox.scrollHeight;
         await markConversationRead(conversationID);
@@ -313,13 +288,12 @@ async function initializeChat() {
     document.getElementById("sendBtn").disabled = true;
 }
 
-
 async function markAllDelivered() {
     try {
-        const response = await axios.post(URLS.messages + "/markedD");
-        console.log("All messages marked delivered:", response.data);
+        await axios.post(URLS.messages + "/markedD");
+        console.log("All messages marked delivered");
     } catch (err) {
-        console.error("Error marking all delivered:", err.response?.data || err.message);
+        console.error("Error marking delivered:", err);
     }
 }
 
@@ -327,20 +301,18 @@ async function markConversationRead(conversationID) {
     if (!conversationID) return;
 
     try {
-        const response = await axios.post(URLS.messages + "/markedR", {
-            conversationID: conversationID,
-            recipientID: userId 
+        await axios.post(URLS.messages + "/markedR", {
+            conversationID,
+            recipientID: userId
         });
-
-        console.log("Messages marked as read:", response.data);
+        console.log("Messages marked as read");
     } catch (error) {
         console.error("Error marking messages as read:", error);
     }
 }
 
+
 document.addEventListener("DOMContentLoaded", () => {
     initializeChat();
     markAllDelivered();
 });
-
-}
