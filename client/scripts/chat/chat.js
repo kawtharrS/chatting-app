@@ -5,100 +5,119 @@ const closePopup = document.getElementById("closePopup");
 const popup = document.getElementById("contactPopup");
 const popupLabel = document.getElementById("popupLabel");
 const deletePopup = document.getElementById("deletePopup");
-const saveNewContact  = document.getElementById("saveNewContact");
+const saveNewContact = document.getElementById("saveNewContact");
 const closeNewPopup = document.getElementById("closeNewPopup");
 const contactName = document.getElementById("contactName");
-const contactEmail= document.getElementById("contactEmail");
+const contactEmail = document.getElementById("contactEmail");
 
-console.log("hi");
 let selectedContactID = null;
-addContact.addEventListener("click", () =>
-    addContactPopup.classList.remove("hidden")
-);
-closeNewPopup.addEventListener("click", ()=>{
-    addContactPopup.classList.add("hidden");
+let currentConversationID = null;
 
+console.log("Initialized with userId:", userId);
+
+addContact.addEventListener("click", () => {
+    addContactPopup.classList.remove("hidden");
+    contactName.value = "";
+    contactEmail.value = "";
 });
+
+closeNewPopup.addEventListener("click", () => {
+    addContactPopup.classList.add("hidden");
+});
+
+saveNewContact.addEventListener("click", () => { addNewContact() });
 
 document.addEventListener("DOMContentLoaded", () => {
-    loadContacts();
+    initializeChat();
 });
 
-saveNewContact.addEventListener("click", ()=>{addNewContact()});
-console.log(userId);
-async function addNewContact(){
-    try{
-        console.log(userId);
+async function addNewContact() {
+    try {
+        console.log("Adding new contact with userId:", userId);
 
-        if(!contactName.value || !contactEmail.value)
-        {
-            alert("All fieds must be filled");
+        if (!contactName.value || !contactEmail.value) {
+            alert("All fields must be filled");
             return;
         }
+
         const name = contactName.value;
         const email = contactEmail.value;
-        console.log(email);
-        console.log("add new contact function")
-        const url = URLS.users +"/email";
+        
+        console.log("Searching for user with email:", email);
+        const url = URLS.users + "/email";
         const contactResponse = await axios.get(`${url}?email=${email}`);
-        console.log(contactResponse.data.payload[0].userID);
-        const contactUserID = contactResponse.data.payload[0].userID;
-        console.log(contactUserID);
+        
+        if (!contactResponse.data.payload || contactResponse.data.payload.length === 0) {
+            alert("User with this email not found");
+            return;
+        }
 
-        const response = await axios.post(URLS.contacts+"/create", {
+        const contactUserID = contactResponse.data.payload[0].userID;
+        console.log("Found contact user ID:", contactUserID);
+
+        const response = await axios.post(URLS.contacts + "/create", {
             userID: userId,
-            contactUserID: contactUserID, 
-            contactName:name, 
+            contactUserID: contactUserID,
+            contactName: name,
             contactEmail: email
         });
-        console.log(response);
+        
+        console.log("Contact created:", response);
         addContactToUI(name, email, contactUserID);
+        addContactPopup.classList.add("hidden");
 
-    }
-    catch(error){
-        console.log(error);
+    } catch (error) {
+        console.error("Error adding contact:", error);
+        alert("Error adding contact: " + (error.response?.data?.message || error.message));
     }
 }
-function addContactToUI(name,email, contactUserID) {
+
+function addContactToUI(name, email, contactUserID) {
     const contactsList = document.getElementById("contactsList");
 
     const btn = document.createElement("button");
     btn.classList.add("contact-btn");
     btn.textContent = name;
-
     btn.dataset.contactId = contactUserID;
 
     btn.addEventListener("click", async () => {
         console.log("Selected contact ID:", contactUserID);
-        localStorage.setItem('contactUserID',contactUserID); 
+        localStorage.setItem('contactUserID', contactUserID);
         popupLabel.textContent = name;
-        const response = await axios.post(URLS.conversations +"/create", {user1ID: userId, user2ID: contactUserID, subject: ""});
-        console.log(response);
         selectedContactID = contactUserID;
-        document.getElementById("sendBtn").disabled = false;
 
-        document.getElementById("chatBox").innerHTML = `<h2>Chat with ${name}</h2>`;
+        try {
+            const response = await axios.post(URLS.conversations + "/create", {
+                user1ID: userId,
+                user2ID: contactUserID,
+                subject: ""
+            });
+            
+            console.log("Conversation response:", response);
+            document.getElementById("sendBtn").disabled = false;
 
-        await getConversation(contactUserID);
+            await getConversation(contactUserID);
+
+        } catch (err) {
+            console.error("Error creating conversation:", err);
+        }
     });
-
 
     contactsList.appendChild(btn);
 }
-
 
 async function loadContacts() {
     try {
         const response = await axios.get(`${URLS.contacts}?userID=${userId}`);
         let contacts = response.data.payload;
 
-        console.log("contacts", contacts);
+        console.log("Loaded contacts:", contacts);
 
         const contactsList = document.getElementById("contactsList");
-        contactsList.innerHTML = ""; 
+        contactsList.innerHTML = "";
 
         if (!Array.isArray(contacts)) {
-            contacts = [contacts];
+            contacts = contacts ? [contacts] : [];
         }
 
         contacts.forEach(contact => {
@@ -109,12 +128,30 @@ async function loadContacts() {
         console.log("Error loading contacts:", error);
     }
 }
+async function markConversationDelivered(conversationID) {
+    if (!conversationID) return;
+
+    try {
+        const response = await axios.post(URLS.messages + "/markedD", {
+            conversationID: conversationID,
+            recipientID: userId 
+        });
+
+        console.log("Messages marked as delivered:", response.data);
+    } catch (error) {
+        console.error("Error marking messages as delivered:", error);
+    }
+}
+
 
 const sendBtn = document.getElementById("sendBtn");
 const userInput = document.getElementById("userInput");
 
 sendBtn.addEventListener("click", async () => {
-    if (!selectedContactID) { alert("Select a contact!"); return; }
+    if (!selectedContactID) {
+        alert("Select a contact!");
+        return;
+    }
 
     const message = userInput.value.trim();
     if (!message) return;
@@ -126,7 +163,8 @@ sendBtn.addEventListener("click", async () => {
             conversationID: currentConversationID,
             content: message
         });
-        console.log(response);
+        
+        console.log("Message sent:", response);
 
         const chatBox = document.getElementById("chatBox");
         const div = document.createElement("div");
@@ -138,11 +176,15 @@ sendBtn.addEventListener("click", async () => {
         chatBox.scrollTop = chatBox.scrollHeight;
 
     } catch (err) {
-        console.error(err);
+        console.error("Error sending message:", err);
     }
 });
 
-let currentConversationID = null;
+userInput.addEventListener("keypress", (e) => {
+    if (e.key === 'Enter') {
+        sendBtn.click();
+    }
+});
 
 async function getConversation(contactID) {
     try {
@@ -154,7 +196,9 @@ async function getConversation(contactID) {
         currentConversationID = response.data.payload.conversationID;
         console.log("Current Conversation ID:", currentConversationID);
 
-        loadMessages(currentConversationID);
+        await loadMessages(currentConversationID);
+        await markAllDelivered();
+        await markConversationRead(currentConversationID);
 
     } catch (err) {
         console.error("Error getting conversation:", err);
@@ -162,31 +206,113 @@ async function getConversation(contactID) {
 }
 
 async function loadMessages(conversationID) {
-    if (!conversationID) return;
+    if (!conversationID) {
+        console.log("No conversation ID provided");
+        return;
+    }
 
     try {
         const response = await axios.get(`${URLS.messages}?conversationID=${conversationID}`);
         let messages = response.data.payload;
+
+        console.log("Raw messages response:", messages);
 
         if (!Array.isArray(messages)) {
             messages = messages ? [messages] : [];
         }
 
         const chatBox = document.getElementById("chatBox");
-        chatBox.innerHTML = `<h2>Chat with ${popupLabel.textContent}</h2>`;
+        
+        const messageElements = chatBox.querySelectorAll('.my-message, .other-message');
+        messageElements.forEach(el => el.remove());
+        
+        let header = chatBox.querySelector('h2');
+        if (!header) {
+            header = document.createElement('h2');
+            chatBox.prepend(header);
+        }
+        header.textContent = `Chat with ${popupLabel.textContent}`;
+
+        console.log(`Loading ${messages.length} messages for user:`, userId);
+
+        messages.sort((a, b) => new Date(a.timestamp || a.createdAt) - new Date(b.timestamp || b.createdAt));
 
         messages.forEach(msg => {
             const div = document.createElement("div");
             div.textContent = msg.content;
-            div.classList.add(msg.senderID === userId ? "my-message" : "other-message");
+            
+            console.log("Message debug:", {
+                content: msg.content,
+                senderID: msg.senderID,
+                userId: userId,
+                isMyMessage: msg.senderID.toString() === userId.toString()
+            });
+
+            if (msg.senderID.toString() === userId.toString()) {
+                div.classList.add("my-message");
+            } else {
+                div.classList.add("other-message");
+            }
+            
             chatBox.appendChild(div);
         });
 
         chatBox.scrollTop = chatBox.scrollHeight;
+        await markConversationRead(conversationID);
 
     } catch (err) {
         console.error("Error loading messages:", err);
     }
 }
 
+
+async function initializeChat() {
+    if (!userId) {
+        userId = localStorage.getItem('userId');
+        if (!userId) {
+            console.error("User ID not found in localStorage");
+            return;
+        }
+    }
+    
+    console.log("Initializing chat with userId:", userId);
+    await loadContacts();
+    
+    const savedContactID = localStorage.getItem('contactUserID');
+    if (savedContactID) {
+        console.log("Found saved contact ID:", savedContactID);
+    }
+    
+    document.getElementById("sendBtn").disabled = true;
+}
+
+
+async function markAllDelivered() {
+    try {
+        const response = await axios.post(URLS.messages + "/markedD");
+        console.log("All messages marked delivered:", response.data);
+    } catch (err) {
+        console.error("Error marking all delivered:", err.response?.data || err.message);
+    }
+}
+
+async function markConversationRead(conversationID) {
+    if (!conversationID) return;
+
+    try {
+        const response = await axios.post(URLS.messages + "/markedR", {
+            conversationID: conversationID,
+            recipientID: userId 
+        });
+
+        console.log("Messages marked as read:", response.data);
+    } catch (error) {
+        console.error("Error marking messages as read:", error);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    initializeChat();
+    markAllDelivered();
+});
 

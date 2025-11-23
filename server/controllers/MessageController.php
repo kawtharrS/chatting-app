@@ -108,7 +108,7 @@ class MessageController
         $message = $this->fetchMessageById($messageID);
         if (!$message) return;
 
-        $fields = ['senderID', 'recipientID', 'content', 'conversationID'];
+        $fields = ['senderID', 'recipientID', 'content', 'conversationID', 'status'];
         $data = [];
 
         foreach ($fields as $field) {
@@ -127,5 +127,35 @@ class MessageController
         $updatedmessage = Message::find($this->connection, $messageID);
         echo ResponseService::response(200, $updatedmessage->toArray());
     }
+
+    
+    public function markAllDelivered() 
+    {
+        $updatedCount = Message::updateWhere($this->connection, ['status' => 'sent'], ['status' => 'delivered']);
+        echo ResponseService::response(200, "$updatedCount messages updated to delivered");
+    }
+
+    public function markAllRead() 
+    {
+        $input = $this->getInput();
+        $conversationID = $input['conversationID'] ?? null;
+        $recipientID = $input['recipientID'] ?? null;
+        if (!$conversationID || !$recipientID) {
+            echo ResponseService::response(400, "conversationID and recipientID are required");
+            return;
+        }
+        $updatedCount = Message::updateWhere(
+            $this->connection, 
+            [
+                'conversationID' => $conversationID,
+                'recipientID' => $recipientID,
+                'status' => 'delivered'
+            ], 
+            ['status' => 'read']
+        );
+        echo ResponseService::response(200, "$updatedCount messages marked as read");
+    }
+
 }
+
 ?>
