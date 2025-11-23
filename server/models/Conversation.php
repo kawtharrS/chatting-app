@@ -1,7 +1,7 @@
 <?php
 include("Model.php");
 
-class Contact extends Model{
+class Conversation extends Model{
     protected int $conversationID;
     private string $subject;
 

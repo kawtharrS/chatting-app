@@ -29,10 +29,11 @@ abstract class Model{
         return $objects;
     }
 
-    public static function find(mysqli $connection, string $id, string $primary_key){
+    public static function find(mysqli $connection, string $id, string $primary_key = "id"){
         $sql = sprintf("SELECT * FROM %s WHERE id = ?", static::$table);
         $stmt = self::bindAndExecute($connection, $sql, [$id]);
-        return $stmt? self::fetchObjects($stmt) : [];
+        $data=$stmt?->get_result()->fetch_object();
+        return $data ? new static($data) : null;
     }
 
     public static function findALl(mysqli $connection){
