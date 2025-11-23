@@ -2,7 +2,8 @@ const cmn ="http://localhost/chat/server"
 URLS={
     login: cmn + "/services/loginService.php",
     users : cmn + "/users",
-    contacts: cmn + "/contacts"
+    contacts: cmn + "/contacts", 
+    messages: cmn + "/messages",
 }
 const userId = localStorage.getItem("user-id");
 

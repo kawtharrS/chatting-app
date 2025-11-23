@@ -48,7 +48,12 @@ class ContactController
 
     public function getAllContacts()
     {
-        $contacts = Contact::findAll($this->connection);
+        $userID = $_GET['userID'] ?? null;
+        if (!$userID) {
+            echo ResponseService::response(400, "userID missing");
+            return;
+        }
+        $contacts = Contact::where($this->connection, ["userID" => intval($userID)]);
         $contactsArray = array_map(fn($contact) => $contact->toArray(), $contacts);
         echo ResponseService::response(200, $contactsArray);
     }
@@ -96,7 +101,7 @@ class ContactController
             return;
         }
 
-        $contact = $this->fetchcontactById($contactID);
+        $contact = $this->fetchContactById($contactID);
         if ($contact) {
             $success = $contact->delete($this->connection);
             echo ResponseService::response($success ? 200 : 500, $success ? "Deleted" : "Failed to delete");

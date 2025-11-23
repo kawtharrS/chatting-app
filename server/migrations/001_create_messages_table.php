@@ -7,10 +7,8 @@ $sql = "CREATE TABLE IF NOT EXISTS messages (
         recipientID INT,
         content TEXT,
         timestamp DATETIME,
-        conversationID INT,
         FOREIGN KEY (SenderID) REFERENCES users(UserID),
-        FOREIGN KEY (RecipientID) REFERENCES users(UserID),
-        FOREIGN KEY (ConversationID) REFERENCES conversations(ConversationID)
+        FOREIGN KEY (RecipientID) REFERENCES users(UserID)
     ); ";
 
 $query = $connection->prepare($sql);

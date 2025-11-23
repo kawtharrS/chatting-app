@@ -48,7 +48,7 @@ class MessageController
 
     public function getAllMessages()
     {
-        $messages = Message::findAll($this->connection);
+        $messages = Message::where($this->connection, "userID :");
         $messagesArray = array_map(fn($message) => $message->toArray(), $messages);
         echo ResponseService::response(200, $messagesArray);
     }
@@ -57,7 +57,7 @@ class MessageController
     {
         $input = $this->getInput();
 
-        if (!isset($input["senderID"], $input["recipientID"], $input["content"], $input["conversationID"])) {
+        if (!isset($input["senderID"], $input["recipientID"], $input["content"])) {
             echo ResponseService::response(400, "Missing required fields");
             return;
         }
@@ -66,7 +66,6 @@ class MessageController
             'senderID' => $input["senderID"],
             'recipientID' => $input["recipientID"],
             'content' => $input["content"],
-            'conversationID' => $input["conversationID"],
         ];
 
         $message = Message::create($this->connection, $data);
@@ -103,7 +102,7 @@ class MessageController
         $message = $this->fetchMessageById($messageID);
         if (!$message) return;
 
-        $fields = ['senderID', 'recipientID', 'content', 'conversationID'];
+        $fields = ['senderID', 'recipientID', 'content'];
         $data = [];
 
         foreach ($fields as $field) {

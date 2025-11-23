@@ -72,14 +72,14 @@ function addContactToUI(name, email, contactUserID) {
         console.log("Selected contact ID:", contactUserID);
         popupLabel.textContent = name;
 
-        // Set the selected contact
         selectedContactID = contactUserID;
 
-        // Optionally enable the send button if it was disabled
         document.getElementById("sendBtn").disabled = false;
 
-        // Clear or load previous messages if needed
-        document.getElementById("chatBox").innerHTML = `<h2>Chat with ${name}</h2>`;
+        const chatwith = `<h2>Chat with ${name}</h2>`;
+        document.getElementById("chatBox").innerHTML = chatwith;;
+
+
     });
 
     contactsList.appendChild(btn);
@@ -90,8 +90,9 @@ async function loadContacts() {
     try {
         const response = await axios.get(`${URLS.contacts}?userID=${userId}`);
         let contacts = response.data.payload;
-
+        console.log(response);
         console.log("contacts", contacts);
+        
 
         const contactsList = document.getElementById("contactsList");
         contactsList.innerHTML = ""; 
@@ -121,22 +122,20 @@ sendBtn.addEventListener("click", async () => {
     const message = userInput.value.trim();
     if (!message) return;
 
-    // Send the message to backend
     try {
-        await axios.post(URLS.chats + "/create", {
+        await axios.post(URLS.messages + "/create", {
             senderID: userId,
             receiverID: selectedContactID,
-            text: message
+            content: message
         });
 
-        // Optionally display the message immediately in the chat UI
         const chatBox = document.getElementById("chatBox");
         const div = document.createElement("div");
         div.classList.add("my-message");
         div.textContent = message;
         chatBox.appendChild(div);
 
-        userInput.value = ""; // clear input
+        userInput.value = ""; 
         chatBox.scrollTop = chatBox.scrollHeight;
     } catch (err) {
         console.error("Error sending message:", err);
