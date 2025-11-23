@@ -86,5 +86,19 @@ abstract class Model
         $stmt = self::bindAndExecute($connection, $sql, array_values($conditions));
         return $stmt ? self::fetchObjects($stmt) : [];
     }
+    public static function whereOr(mysqli $connection, array $conditions): array
+    {
+        $clauses = array_map(fn($group) => 
+            '(' . implode(' AND ', array_map(fn($col) => "$col = ?", array_keys($group))) . ')', 
+            $conditions
+        );
+
+        $sql = sprintf("SELECT * FROM %s WHERE %s", static::$table, implode(' OR ', $clauses));
+        $params = array_merge(...array_map('array_values', $conditions));
+        $stmt = self::bindAndExecute($connection, $sql, $params);
+        return $stmt ? self::fetchObjects($stmt) : [];
+    }
+
+    
 }
 ?>

@@ -4,6 +4,7 @@ URLS={
     users : cmn + "/users",
     contacts: cmn + "/contacts", 
     messages: cmn + "/messages",
+    conversations: cmn + "/conversations"
 }
 const userId = localStorage.getItem("user-id");
 

@@ -48,10 +48,34 @@ class MessageController
 
     public function getAllMessages()
     {
-        $messages = Message::where($this->connection, "userID :");
+        $recipientID = $_GET['recipientID'] ?? null;
+        if (!$recipientID) {
+            echo ResponseService::response(400, "recipientID missing");
+            return;
+        }
+        $messages = Message::where($this->connection, ["recipientID"=>intval($recipientID)]);
         $messagesArray = array_map(fn($message) => $message->toArray(), $messages);
         echo ResponseService::response(200, $messagesArray);
     }
+    public function getMessagesBetweenUsers()
+    {
+        $user1 = $_GET['user1'] ?? null;
+        $user2 = $_GET['user2'] ?? null;
+
+        if (!$user1 || !$user2) {
+            echo ResponseService::response(400, "Both user IDs are required");
+            return;
+        }
+
+        $messages = Message::whereOr($this->connection, [
+            ['senderID' => $user1, 'recipientID' => $user2],
+            ['senderID' => $user2, 'recipientID' => $user1]
+        ]);
+
+        $messagesArray = array_map(fn($m) => $m->toArray(), $messages);
+        echo ResponseService::response(200, $messagesArray);
+    }
+
 
     public function insertMessage()
     {

@@ -14,7 +14,14 @@ $apis = [
     '/contacts/create'         => ['controller' => 'ContactController', 'method' => 'insertContact'],
     '/contacts/delete'         => ['controller' => 'ContactController', 'method' => 'deleteContact'],
     '/contacts/update'         => ['controller' => 'ContactController', 'method' => 'updateContact'],
-    '/contacts/email'         => ['controller' => 'ContactController', 'method' => 'getContactByEmail'],
+    '/contacts/email'          => ['controller' => 'ContactController', 'method' => 'getContactByEmail'],
+
+
+    '/conversations/id'             => ['controller' => 'ConversationController', 'method' => 'getConversationsById'],
+    '/conversations'                => ['controller' => 'ConversationController', 'method' => 'getAllConversations'],
+    '/conversations/create'         => ['controller' => 'ConversationController', 'method' => 'insertConversation'],
+    '/conversations/delete'         => ['controller' => 'ConversationController', 'method' => 'deleteConversations'],
+    '/conversations/update'         => ['controller' => 'ConversationController', 'method' => 'updateConversations'],
     
     '/messages/id'             => ['controller' => 'MessageController', 'method' => 'getMessagesById'],
     '/messages'                => ['controller' => 'MessageController', 'method' => 'getAllMessages'],
@@ -22,11 +29,11 @@ $apis = [
     '/messages/delete'         => ['controller' => 'MessageController', 'method' => 'deleteMessages'],
     '/messages/update'         => ['controller' => 'MessageController', 'method' => 'updateMessages'],
 
-    '/notifications/id'             => ['controller' => 'NotificationController', 'method' => 'getNotificationsById'],
-    '/notifications'                => ['controller' => 'NotificationController', 'method' => 'getAllNotifications'],
-    '/notifications/create'         => ['controller' => 'NotificationController', 'method' => 'insertNotification'],
-    '/notifications/delete'         => ['controller' => 'NotificationController', 'method' => 'deleteCNotifications'],
-    '/notifications/update'         => ['controller' => 'NotificationController', 'method' => 'updateNotifications'],
+    '/notifications/id'             => ['controller' => 'NotificationsController', 'method' => 'getNotificationsById'],
+    '/notifications'                => ['controller' => 'NotificationsController', 'method' => 'getAllNotifications'],
+    '/notifications/create'         => ['controller' => 'NotificationsController', 'method' => 'insertNotifications'],
+    '/notifications/delete'         => ['controller' => 'NotificationsController', 'method' => 'deleteCNotifications'],
+    '/notifications/update'         => ['controller' => 'NotificationsController', 'method' => 'updateNotifications'],
 
 ];
 

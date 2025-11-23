@@ -7,6 +7,7 @@ class Message extends Model{
     private int $recipientID;
     private string $content;
     private string $timestamp;
+    private int $conversationID;
 
 
     protected static string $table = "messages";
@@ -17,6 +18,8 @@ class Message extends Model{
         $this ->recipientID = $data["recipientID"];
         $this ->content = $data["content"];
         $this ->timestamp = $data["timestamp"];
+        $this->conversationID = $data['conversationID'];
+
     }
 
     public function getMessageID(){
@@ -50,11 +53,11 @@ class Message extends Model{
 
 
     public function __toString(){
-        return $this->messageID . " | " . $this->senderID . " | " .$this->recipientID . " | " . $this->content . " | " . $this->timestamp ;
+        return $this->messageID . " | " . $this->senderID . " | " .$this->recipientID . " | " . $this->content . " | " . $this->timestamp . " | " . $this->conversationID ;
     }
     
     public function toArray(){
-        return ["messageID" => $this->messageID, "senderID" => $this->senderID,"recipientID" => $this->recipientID ,"content" => $this->content,"timestamp" => $this->timestamp];
+        return ["messageID" => $this->messageID, "senderID" => $this->senderID,"recipientID" => $this->recipientID ,"content" => $this->content,"timestamp" => $this->timestamp, "conversationID" => $this->conversationID];
     }
 
 }
