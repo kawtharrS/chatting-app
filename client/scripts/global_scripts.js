@@ -4,7 +4,8 @@ URLS={
     users : cmn + "/users",
     contacts: cmn + "/contacts", 
     conversations:cmn + "/conversations",
-    messages : cmn +"/messages"
+    messages : cmn +"/messages",
+    apis: cmn+"/public/review.php"
 }
 const userId = localStorage.getItem("user-id");
 const contactUserID= localStorage.getItem("contactUserID");

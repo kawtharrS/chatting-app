@@ -3,21 +3,12 @@ include("../connection/config.php");
 include("../connection/connection.php");
 include("./prompt.php");
 
+$contents = $input['contents'] ?? null;
 
-if (!$input || !isset($input["advice"])) {
-    echo json_encode([
-        "reply" => "No advice received"
-    ]);
-    exit;
-}
-
-if (!$input || !isset($input["advice"])) {
+if (!$contents) {
     echo json_encode(["reply" => "No advice received"]);
     exit;
 }
-
-$adviceArray = array_filter($input["advice"]); // remove the null
-$user_content = implode("\n", $adviceArray);   // join into a single string
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $URL_OPENAI);
@@ -27,10 +18,9 @@ curl_setopt($ch, CURLOPT_POST, true);
 $data = [
     "model" => "gpt-4o-mini",
     "input" => [
-        ["role" => "system", "content" => $advice_prompt],
-        ["role" => "user", "content" => $user_content]
-    ],
-    "text" => ["format" => ["type" => "text"]]
+        ["role" => "system", "content" => $prompt],
+        ["role" => "user", "content" => $contents]
+    ]
 ];
 
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
@@ -46,7 +36,7 @@ if (curl_errno($ch)) {
     exit;
 }
 
-curl_close(handle: $ch);
+curl_close($ch);
 
 $json = json_decode($response, true);
 

@@ -32,6 +32,8 @@ $apis = [
     '/messages/update'         => ['controller' => 'MessageController', 'method' => 'updateMessage'],
     '/messages/markedD'        => ['controller' => 'MessageController', 'method' => 'markAllDelivered'],
     '/messages/markedR'        => ['controller' => 'MessageController', 'method' => 'markAllRead'],
+    '/messages/receive'        => ['controller' => 'MessageController', 'method' => 'getAllRMessages'],
+
 
     '/notifications/id'             => ['controller' => 'NotificationController', 'method' => 'getNotificationsById'],
     '/notifications'                => ['controller' => 'NotificationController', 'method' => 'getAllNotifications'],

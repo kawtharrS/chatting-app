@@ -27,10 +27,6 @@ closeNewPopup.addEventListener("click", () => {
 
 saveNewContact.addEventListener("click", () => { addNewContact() });
 
-document.addEventListener("DOMContentLoaded", () => {
-    initializeChat();
-});
-
 async function addNewContact() {
     try {
         console.log("Adding new contact with userId:", userId);
@@ -77,27 +73,33 @@ function addContactToUI(name, email, contactUserID) {
 
     const btn = document.createElement("button");
     btn.classList.add("contact-btn");
-    btn.textContent = name;
     btn.dataset.contactId = contactUserID;
 
-    btn.addEventListener("click", async () => {
-        console.log("Selected contact ID:", contactUserID);
-        localStorage.setItem('contactUserID', contactUserID);
-        popupLabel.textContent = name;
-        selectedContactID = contactUserID;
+    const text = document.createElement("span");
+    text.textContent = name;
+    text.style.marginRight = "8px";
 
+    const badge = document.createElement("span");
+    badge.classList.add("unread-badge");
+
+    btn.appendChild(text);
+    btn.appendChild(badge);
+
+    btn.addEventListener("click", async () => {
+        selectedContactID = contactUserID;
+        popupLabel.textContent = name;
+        badge.textContent = ""; 
         try {
             const response = await axios.post(URLS.conversations + "/create", {
                 user1ID: userId,
                 user2ID: contactUserID,
                 subject: ""
             });
-            
-            console.log("Conversation response:", response);
+
+            currentConversationID = response.data.payload.conversationID;
             document.getElementById("sendBtn").disabled = false;
 
             await getConversation(contactUserID);
-
         } catch (err) {
             console.error("Error creating conversation:", err);
         }
@@ -105,29 +107,27 @@ function addContactToUI(name, email, contactUserID) {
 
     contactsList.appendChild(btn);
 }
-
 async function loadContacts() {
     try {
         const response = await axios.get(`${URLS.contacts}?userID=${userId}`);
         let contacts = response.data.payload;
 
-        console.log("Loaded contacts:", contacts);
-
         const contactsList = document.getElementById("contactsList");
         contactsList.innerHTML = "";
 
-        if (!Array.isArray(contacts)) {
-            contacts = contacts ? [contacts] : [];
-        }
+        if (!Array.isArray(contacts)) contacts = contacts ? [contacts] : [];
 
         contacts.forEach(contact => {
             addContactToUI(contact.contactName, contact.contactEmail, contact.contactUserID);
         });
 
+        await updateUnreadCounts();
+
     } catch (error) {
         console.log("Error loading contacts:", error);
     }
 }
+
 
 const sendBtn = document.getElementById("sendBtn");
 const userInput = document.getElementById("userInput");
@@ -192,7 +192,7 @@ async function getConversation(contactID) {
 
         currentConversationID = response.data.payload.conversationID;
         console.log("Current Conversation ID:", currentConversationID);
-
+        
         await markAllDelivered();
         await markConversationRead(currentConversationID);
         await loadMessages(currentConversationID); 
@@ -308,6 +308,53 @@ async function markConversationRead(conversationID) {
         console.log("Messages marked as read");
     } catch (error) {
         console.error("Error marking messages as read:", error);
+    }
+}
+
+async function updateUnreadCounts() {
+    try {
+        const response = await axios.get(`${URLS.messages}/receive?recipientID=${userId}`);
+        let messages = response.data.payload;
+
+        if (!Array.isArray(messages)) messages = messages ? [messages] : [];
+
+        const buttons = document.querySelectorAll(".contact-btn");
+        for (const btn of buttons) {
+            const contactID = btn.dataset.contactId;
+            const badge = btn.querySelector(".unread-badge");
+
+            const unreadMessages = messages.filter(msg => msg.senderID == contactID && msg.status === "delivered");
+            const unreadCount = unreadMessages.length;
+
+            if (unreadCount > 0) {
+                badge.style.display = "inline-block";
+                if (unreadCount > 3) {
+                    badge.textContent = "3+";
+                } else {
+                    badge.textContent = unreadCount;
+                }
+
+                if (unreadCount > 0) {
+                    let contents = unreadMessages.map(msg => msg.content).join("\n");
+                    try {
+                        const summaryResponse = await axios.post(URLS.apis, { contents });
+                        console.log("AI summary:", summaryResponse.data);
+                        const reply = summaryResponse.data.reply;
+                        console.log(reply);
+                        alert(reply);
+                    } catch (error) {
+                        console.error("Error summarizing messages:", error);
+                    }
+                }
+            } else {
+                badge.textContent = "";
+                badge.style.display = "none";
+            }
+        }
+
+        console.log("Updated unread counts");
+    } catch (error) {
+        console.error("Error fetching unread messages:", error);
     }
 }
 

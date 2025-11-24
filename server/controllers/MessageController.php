@@ -58,6 +58,18 @@ class MessageController
         echo ResponseService::response(200, $messagesArray);
     }
 
+    public function getAllRMessages()
+    {
+        $recipientID = $_GET['recipientID'] ?? null;
+        if (!$recipientID) {
+            echo ResponseService::response(400, "recipientID is missing");
+            return;
+        }
+        $messages = Message::where($this->connection, ["recipientID"=>intval($recipientID)]);
+        $messagesArray = array_map(fn($message) => $message->toArray(), $messages);
+        echo ResponseService::response(200, $messagesArray);
+    }
+
     public function insertMessage()
     {
         $input = $this->getInput();
@@ -155,6 +167,7 @@ class MessageController
         );
         echo ResponseService::response(200, "$updatedCount messages marked as read");
     }
+
 
 }
 
