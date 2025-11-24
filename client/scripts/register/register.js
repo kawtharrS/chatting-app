@@ -21,7 +21,6 @@ async function register()
 
             console.log(response);
             alert("You registered, You can login now!")
-
         }
         else{
             alert("Enter valid Fields");

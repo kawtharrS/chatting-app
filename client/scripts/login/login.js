@@ -15,11 +15,9 @@ loginBtn.addEventListener("click", async () => {
 
         console.log(response);
 
-        //add user id to the local storage
         const userId = response.data.data.userID.userID;
         localStorage.setItem('user-id',userId); 
         console.log("User id saved:", userId);
-
 
         let isLogin = false;
         if (response.status === 200) 
@@ -28,6 +26,12 @@ loginBtn.addEventListener("click", async () => {
         localStorage.setItem('isLogin', isLogin); 
 
         alert("Welcome you are logged in");
+
+        if(isLogin)
+        {
+           window.location.href="/client/pages/chat.html";
+
+        }
     } catch (error) {
         console.log(error);
         console.error("Login failed:", error);

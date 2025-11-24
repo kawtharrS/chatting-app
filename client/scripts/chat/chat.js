@@ -1,20 +1,3 @@
-const addContact = document.getElementById("addContact");
-const addContactPopup = document.getElementById("addContactPopup");
-const saveContact = document.getElementById("saveContact");
-const closePopup = document.getElementById("closePopup");
-const popup = document.getElementById("contactPopup");
-const popupLabel = document.getElementById("popupLabel");
-const deletePopup = document.getElementById("deletePopup");
-const saveNewContact = document.getElementById("saveNewContact");
-const closeNewPopup = document.getElementById("closeNewPopup");
-const contactName = document.getElementById("contactName");
-const contactEmail = document.getElementById("contactEmail");
-
-let selectedContactID = null;
-let currentConversationID = null;
-
-console.log("Initialized with userId:", userId);
-
 addContact.addEventListener("click", () => {
     addContactPopup.classList.remove("hidden");
     contactName.value = "";
@@ -26,6 +9,11 @@ closeNewPopup.addEventListener("click", () => {
 });
 
 saveNewContact.addEventListener("click", () => { addNewContact() });
+
+document.addEventListener("DOMContentLoaded", () => {
+    initializeChat();
+    markAllDelivered();
+});
 
 async function addNewContact() {
     try {
@@ -59,16 +47,15 @@ async function addNewContact() {
         });
         
         console.log("Contact created:", response);
-        addContactToUI(name, email, contactUserID);
+        addContactToUI(name, contactUserID);
         addContactPopup.classList.add("hidden");
 
     } catch (error) {
-        console.error("Error adding contact:", error);
-        alert("Error adding contact: " + (error.response?.data?.message || error.message));
+        console.log(error);
     }
 }
 
-function addContactToUI(name, email, contactUserID) {
+function addContactToUI(name, contactUserID) {
     const contactsList = document.getElementById("contactsList");
 
     const btn = document.createElement("button");
@@ -118,29 +105,22 @@ async function loadContacts() {
         if (!Array.isArray(contacts)) contacts = contacts ? [contacts] : [];
 
         contacts.forEach(contact => {
-            addContactToUI(contact.contactName, contact.contactEmail, contact.contactUserID);
+            addContactToUI(contact.contactName, contact.contactUserID);
         });
-
         await updateUnreadCounts();
-
     } catch (error) {
         console.log("Error loading contacts:", error);
     }
 }
 
 
-const sendBtn = document.getElementById("sendBtn");
-const userInput = document.getElementById("userInput");
-
 sendBtn.addEventListener("click", async () => {
     if (!selectedContactID) {
         alert("Select a contact!");
         return;
     }
-
     const message = userInput.value.trim();
     if (!message) return;
-
     try {
         const response = await axios.post(URLS.messages + "/create", {
             senderID: userId,
@@ -148,11 +128,8 @@ sendBtn.addEventListener("click", async () => {
             conversationID: currentConversationID,
             content: message
         });
-        
-        console.log("Message sent:", response);
 
         const chatBox = document.getElementById("chatBox");
-
         const div = document.createElement("div");
         div.classList.add("my-message");
 
@@ -171,8 +148,8 @@ sendBtn.addEventListener("click", async () => {
         userInput.value = "";
         chatBox.scrollTop = chatBox.scrollHeight;
 
-    } catch (err) {
-        console.error("Error sending message:", err);
+    } catch (error) {
+        console.log(error);
     }
 });
 
@@ -196,8 +173,8 @@ async function getConversation(contactID) {
         await markAllDelivered();
         await markConversationRead(currentConversationID);
         await loadMessages(currentConversationID); 
-    } catch (err) {
-        console.error("Error getting conversation:", err);
+    } catch (error) {
+        console.log(error);
     }
 }
 
@@ -211,14 +188,10 @@ async function loadMessages(conversationID) {
         const response = await axios.get(`${URLS.messages}?conversationID=${conversationID}`);
         let messages = response.data.payload;
 
-        console.log("Raw messages response:", messages);
-
         if (!Array.isArray(messages)) {
             messages = messages ? [messages] : [];
         }
-
         const chatBox = document.getElementById("chatBox");
-        
         const messageElements = chatBox.querySelectorAll('.my-message, .other-message');
         messageElements.forEach(el => el.remove());
         
@@ -258,12 +231,11 @@ async function loadMessages(conversationID) {
             chatBox.appendChild(div);
         });
 
-
         chatBox.scrollTop = chatBox.scrollHeight;
         await markConversationRead(conversationID);
 
-    } catch (err) {
-        console.error("Error loading messages:", err);
+    } catch (error) {
+        console.log(error);
     }
 }
 
@@ -292,8 +264,8 @@ async function markAllDelivered() {
     try {
         await axios.post(URLS.messages + "/markedD");
         console.log("All messages marked delivered");
-    } catch (err) {
-        console.error("Error marking delivered:", err);
+    } catch (error) {
+        console.log(error);
     }
 }
 
@@ -307,7 +279,7 @@ async function markConversationRead(conversationID) {
         });
         console.log("Messages marked as read");
     } catch (error) {
-        console.error("Error marking messages as read:", error);
+        console.log(error);
     }
 }
 
@@ -333,7 +305,6 @@ async function updateUnreadCounts() {
                 } else {
                     badge.textContent = unreadCount;
                 }
-
                 if (unreadCount > 0) {
                     let contents = unreadMessages.map(msg => msg.content).join("\n");
                     try {
@@ -343,7 +314,7 @@ async function updateUnreadCounts() {
                         console.log(reply);
                         alert(reply);
                     } catch (error) {
-                        console.error("Error summarizing messages:", error);
+                        console.log(error);
                     }
                 }
             } else {
@@ -351,15 +322,10 @@ async function updateUnreadCounts() {
                 badge.style.display = "none";
             }
         }
-
-        console.log("Updated unread counts");
     } catch (error) {
-        console.error("Error fetching unread messages:", error);
+        console.log(error);
     }
 }
 
 
-document.addEventListener("DOMContentLoaded", () => {
-    initializeChat();
-    markAllDelivered();
-});
+

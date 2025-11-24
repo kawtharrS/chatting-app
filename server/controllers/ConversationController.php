@@ -118,6 +118,7 @@ class ConversationController
         echo ResponseService::response(200, $updatedConversation->toArray());
     }
 
+    //retrieves the existing conversation btw 2 users or craete new one 
     public function getConversationBetweenUsers()
     {
         $input = $this->getInput();
@@ -129,22 +130,25 @@ class ConversationController
             return;
         }
 
+        //get all the convos where user1 is involved
         $conversations = Conversation::whereOr($this->connection, [
             'user1ID' => $user1,
             'user2ID' => $user1
         ]);
 
+        //foreach convo see if user2 is the recipient
         $conversation = null;
-        foreach ($conversations as $conv) {
+        foreach ($conversations as $convo) {
             if (
-                ($conv->getUser1ID() == $user1 && $conv->getUser2ID() == $user2) ||
-                ($conv->getUser1ID() == $user2 && $conv->getUser2ID() == $user1)
+                ($convo->getUser1ID() == $user1 && $convo->getUser2ID() == $user2) ||
+                ($convo->getUser1ID() == $user2 && $convo->getUser2ID() == $user1)
             ) {
-                $conversation = $conv;
+                // save if found
+                $conversation = $convo;
                 break;
             }
         }
-
+        // create if !found
         if (!$conversation) {
             $data = [
                 'user1ID' => $user1,
